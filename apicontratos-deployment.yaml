@@ -1,4 +1,32 @@
-﻿apiVersion: apps/v1
+﻿# ==========================
+# CONFIGMAP
+# ==========================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apicontratos-config
+data:
+  DB_HOST: mysql
+  DB_NAME: contratosdb
+
+---
+# ==========================
+# SECRET
+# ==========================
+apiVersion: v1
+kind: Secret
+metadata:
+  name: apicontratos-secret
+type: Opaque
+stringData:
+  DB_USER: apiuser
+  DB_PASS: apipass
+
+---
+# ==========================
+# DEPLOYMENT (API Contratos)
+# ==========================
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: apicontratos
@@ -15,18 +43,33 @@ spec:
       containers:
       - name: apicontratos
         image: thiagodarlei/apicontratos:1.0
-        env:
-          - name: DB_HOST
-            value: mysql
-          - name: DB_NAME
-            value: contratosdb
-          - name: DB_USER
-            value: apiuser
-          - name: DB_PASS
-            value: apipass
+        envFrom:
+          - configMapRef:
+              name: apicontratos-config
+          - secretRef:
+              name: apicontratos-secret
         ports:
         - containerPort: 8080
+        readinessProbe:   # Checa se API + banco estão OK
+          httpGet:
+            path: /contratos   # esse endpoint validar conexão com MySQL
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        livenessProbe:    # Reinicia caso a API trave
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 20
+          periodSeconds: 15
+          timeoutSeconds: 5
+
 ---
+# ==========================
+# SERVICE (NodePort)
+# ==========================
 apiVersion: v1
 kind: Service
 metadata:
@@ -36,6 +79,6 @@ spec:
   selector:
     app: apicontratos
   ports:
-    - port: 80
-      targetPort: 8080
-      nodePort: 30080
+    - port: 80         # porta interna do service
+      targetPort: 8080 # porta do container
+      nodePort: 30080  # porta exposta no Node

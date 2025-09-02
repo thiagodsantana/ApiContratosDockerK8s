@@ -1,4 +1,8 @@
-﻿apiVersion: v1
+﻿# ==========================
+# PVC para MySQL
+# Reserva 1Gi de armazenamento persistente
+# ==========================
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mysql-pvc
@@ -8,13 +12,18 @@ spec:
   resources:
     requests:
       storage: 1Gi
+
 ---
+# ==========================
+# DEPLOYMENT MYSQL
+# Banco de dados MySQL com volume persistente
+# ==========================
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql
 spec:
-  replicas: 1
+  replicas: 1 # geralmente apenas 1 réplica para banco de dados
   selector:
     matchLabels:
       app: mysql
@@ -26,25 +35,49 @@ spec:
       containers:
       - name: mysql
         image: mysql:8.0
-        env:
-          - name: MYSQL_ROOT_PASSWORD
-            value: root
-          - name: MYSQL_DATABASE
-            value: contratosdb
-          - name: MYSQL_USER
-            value: apiuser
-          - name: MYSQL_PASSWORD
-            value: apipass
         ports:
           - containerPort: 3306
+        env: # variáveis de ambiente lidas do ConfigMap/Secret
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: contratos-secret
+                key: MYSQL_ROOT_PASSWORD
+          - name: MYSQL_DATABASE
+            valueFrom:
+              configMapKeyRef:
+                name: contratos-config
+                key: DB_NAME
+          - name: MYSQL_USER
+            valueFrom:
+              secretKeyRef:
+                name: contratos-secret
+                key: DB_USER
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: contratos-secret
+                key: DB_PASS
         volumeMounts:
-          - mountPath: /var/lib/mysql
+          - mountPath: /var/lib/mysql # caminho onde os dados ficam
             name: mysql-storage
+        resources: # solicitações e limites de CPU/memória
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
       volumes:
         - name: mysql-storage
           persistentVolumeClaim:
             claimName: mysql-pvc
+
 ---
+# ==========================
+# SERVICE MYSQL
+# Service interno para acesso da API ao banco
+# ==========================
 apiVersion: v1
 kind: Service
 metadata:
@@ -53,5 +86,5 @@ spec:
   selector:
     app: mysql
   ports:
-    - port: 3306
-      targetPort: 3306
+    - port: 3306 # porta interna do service
+      targetPort: 3306 # porta do container

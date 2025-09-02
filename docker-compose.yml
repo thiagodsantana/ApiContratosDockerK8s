@@ -1,37 +1,61 @@
-﻿services:
+﻿version: "3.9" # versão do schema Docker Compose
+
+services:
+  # ==========================
+  # BANCO DE DADOS MYSQL
+  # ==========================
   mysql:
     image: mysql:8.0
     container_name: mysql-contratos
-    restart: always
+    restart: always # reinicia container em caso de falha
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: contratosdb
-      MYSQL_USER: apiuser
-      MYSQL_PASSWORD: apipass
+      # variáveis de inicialização do banco
+      MYSQL_ROOT_PASSWORD: root      # senha do usuário root
+      MYSQL_DATABASE: contratosdb    # banco criado no startup
+      MYSQL_USER: apiuser            # usuário padrão
+      MYSQL_PASSWORD: apipass        # senha do usuário
     ports:
-      - "3306:3306"
+      - "3306:3306" # expõe o MySQL localmente (não obrigatório em prod)
     volumes:
-      - mysql_data:/var/lib/mysql
-    healthcheck:
+      - mysql_data:/var/lib/mysql # volume persistente para dados do banco
+    healthcheck: # garante que o serviço só fique "UP" após estar pronto
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 20s
+    networks:
+      - contratos-net
 
+  # ==========================
+  # API CONTRATOS
+  # ==========================
   apicontratos:
-    build: .
+    build: . # constrói a imagem a partir do Dockerfile no diretório atual
     container_name: apicontratos
     depends_on:
       mysql:
-        condition: service_healthy
+        condition: service_healthy # só inicia após MySQL estar saudável
     environment:
+      # variáveis de conexão com o banco
       DB_HOST: mysql
       DB_NAME: contratosdb
       DB_USER: apiuser
       DB_PASS: apipass
     ports:
-      - "8080:8080"
+      - "8080:8080" # expõe a API na porta 8080 local
+    networks:
+      - contratos-net
 
+# ==========================
+# VOLUMES
+# ==========================
 volumes:
-  mysql_data:
+  mysql_data: # volume nomeado para persistência do MySQL
+
+# ==========================
+# REDE
+# ==========================
+networks:
+  contratos-net:
+    driver: bridge # rede interna isolada para comunicação entre API e DB

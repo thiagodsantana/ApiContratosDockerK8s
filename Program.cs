@@ -28,8 +28,8 @@ using (var scope = app.Services.CreateScope())
     if (!db.Contratos.Any())
     {
         db.Contratos.AddRange(
-            new Contrato { Numero = "C-2025-001", Cliente = "Antonio João", Valor = 15000.00m, DataAssinatura = DateTime.Now },
-            new Contrato { Numero = "C-2025-002", Cliente = "José da Silva", Valor = 8000.00m, DataAssinatura = DateTime.Now },
+            new Contrato { Numero = "C-2023-001", Cliente = "Antonio Joao", Valor = 15000.00m, DataAssinatura = DateTime.Now },
+            new Contrato { Numero = "C-2024-002", Cliente = "Jose da Silva", Valor = 8000.00m, DataAssinatura = DateTime.Now },
             new Contrato { Numero = "C-2025-003", Cliente = "Thiago Darlei", Valor = 5000.00m, DataAssinatura = DateTime.Now }
         );
         db.SaveChanges();
