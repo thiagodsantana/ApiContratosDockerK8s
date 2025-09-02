@@ -1,4 +1,3 @@
-````markdown
 # 🚀 ApiContratosDockerK8s
 
 Projeto de exemplo que demonstra o ciclo completo de **containerização** e **orquestração** de uma aplicação .NET + MySQL utilizando **Docker**, **Docker Compose** e **Kubernetes**.
@@ -190,5 +189,3 @@ docker rm -f $(docker ps -aq)
 * Monitoramento com **Prometheus + Grafana**.
 * Implementar **Ingress Controller** para expor via domínio/HTTPS.
 * Adicionar **migrations automáticas** no startup da API.
-Quer que eu já estruture esse **README.md com links de imagens/diagramas** (ex.: arquitetura, fluxo Docker → K8s) para deixar ainda mais visual?
-```
