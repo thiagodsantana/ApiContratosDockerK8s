@@ -33,17 +33,15 @@ Seu objetivo é oferecer uma API performática, escalável e resiliente, adequad
 
 ## 🧩 Arquitetura da Solução
 
-```mermaid
 flowchart TD
-    A[Cliente / Sistema Externo] -->|Requisição REST| B[API Contratos (.NET 8)]
-    B -->|Container Image| C[Docker]
+    A[Cliente / Sistema Externo] -->|Requisição REST| B[API Contratos .NET 8]
+    B -->|Imagem Docker| C[Container]
     C -->|Implantação| D[Kubernetes Cluster]
-    D -->|Gerenciado via| E[Terraform IaC]
-    D -->|Configurações| F[ConfigMaps / Secrets]
+    D -->|Gerenciado por| E[Terraform IaC]
+    D -->|Configurações| F[ConfigMaps e Secrets]
     D -->|Banco de Dados| G[(PostgreSQL)]
-    D -->|Exposição| H[Ingress Controller / LoadBalancer]
+    D -->|Exposição| H[Ingress Controller ou LoadBalancer]
     H -->|Acesso HTTP/HTTPS| A
-````
 
 ---
 
