@@ -196,5 +196,3 @@ Antes de iniciar, certifique-se de ter instalado:
 Analista de Sistemas | Arquiteto em evolução
 [GitHub](https://github.com/thiagodsantana) • [LinkedIn](https://www.linkedin.com/in/thiagodsantana)
 
-Posso te mostrar como ficará direto com Markdown renderizado.
-```
