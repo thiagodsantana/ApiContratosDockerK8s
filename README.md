@@ -13,7 +13,7 @@
 O **ApiContratosDockerK8s** é um serviço REST desenvolvido em **.NET 8**, projetado para o gerenciamento e integração de **contratos corporativos**.  
 A aplicação é totalmente **containerizada com Docker** e **orquestrada via Kubernetes**, com **infraestrutura declarativa** provisionada via **Terraform**.
 
-Seu objetivo é oferecer uma API performática, escalável e resiliente, adequada para ambientes de **produção em nuvem** (GCP, Azure ou AWS).
+Seu objetivo é oferecer uma API performática, escalável e resiliente, adequada para ambientes de **produção em nuvem** (GCP, Azure ou AWS)!
 
 ---
 
